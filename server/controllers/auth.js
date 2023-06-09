@@ -30,9 +30,27 @@ export const register = async (req, res) => {
       impressions:Math.floor(Math.random() * 10000)
     });
     const savedUser = await newUser.save()
-    res.status(201).send(savedUser).select("-password")
+    res.status(201).send(savedUser)
 
   } catch (error) {
     res.status(500).json({ error: error.message})
   }
 };
+
+// Login user
+
+export const login = async(req, res) => {
+  try {
+  const {email,password} =  req.body
+  const user = await User.findOne({ email: email})
+  if(!user) return res.status(404).send({message: 'User not found'})
+
+  const isMatch = await bcrypt.compare(password, user.password)
+  if(!isMatch) return res.status(400).send({message: 'Wrong credetials'})
+  const token = Jwt.sign({id:user._id},process.env.JWT_SECRET)
+  delete user.password
+  res.status(200).json({token,user})
+} catch (error) {
+  res.status(500).json({ error: error.message})
+}
+}
