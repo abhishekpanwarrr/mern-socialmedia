@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { setFriends } from "state";
 import FlexBetween from "./FlexBetween";
 import UserImage from "./UserImage";
+import { useEffect } from "react";
 
 const Friend = ({ friendId, name, subtitle, userPicturePath }) => {
   const dispatch = useDispatch();
@@ -19,8 +20,6 @@ const Friend = ({ friendId, name, subtitle, userPicturePath }) => {
   const main = palette.neutral.main;
   const medium = palette.neutral.medium;
 
-  const isFriend = friends.find((friend) => friend._id === friendId);
-
   const patchFriend = async () => {
     const response = await fetch(
       `http://localhost:3001/users/${_id}/${friendId}`,
@@ -33,11 +32,17 @@ const Friend = ({ friendId, name, subtitle, userPicturePath }) => {
       }
     );
     const data = await response.json();
-    dispatch(setFriends({ friends: data }));
+    if (data) {
+      dispatch(setFriends({ friends: data }));
+    } else {
+      dispatch(setFriends({ friends: null }));
+    }
   };
-
+  const isFriend =
+    Array.isArray(friends) &&
+    friends?.find((friend) => friend._id === friendId);
   return (
-    <FlexBetween>
+    <FlexBetween key={friendId}>
       <FlexBetween gap="1rem">
         <UserImage image={userPicturePath} size="55px" />
         <Box

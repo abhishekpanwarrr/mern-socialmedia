@@ -14,7 +14,11 @@ const PostsWidget = ({ userId, isProfile = false }) => {
       headers: { Authorization: `Bearer ${token}` },
     });
     const data = await response.json();
-    dispatch(setPosts({ posts: data }));
+    if (data) {
+      dispatch(setPosts({ posts: data }));
+    } else {
+      dispatch(setPosts({ posts: null }));
+    }
   };
 
   const getUserPosts = async () => {
@@ -26,7 +30,11 @@ const PostsWidget = ({ userId, isProfile = false }) => {
       }
     );
     const data = await response.json();
-    dispatch(setPosts({ posts: data }));
+    if (data) {
+      dispatch(setPosts({ posts: data }));
+    } else {
+      dispatch(setPosts({ posts: null }));
+    }
   };
 
   useEffect(() => {
@@ -39,33 +47,34 @@ const PostsWidget = ({ userId, isProfile = false }) => {
 
   return (
     <>
-      {posts?.map(
-        ({
-          _id,
-          userId,
-          firstName,
-          lastName,
-          description,
-          location,
-          picturePath,
-          userPicturePath,
-          likes,
-          comments,
-        }) => (
-          <PostWidget
-            key={_id}
-            postId={_id}
-            postUserId={userId}
-            name={`${firstName} ${lastName}`}
-            description={description}
-            location={location}
-            picturePath={picturePath}
-            userPicturePath={userPicturePath}
-            likes={likes}
-            comments={comments}
-          />
-        )
-      )}
+      {posts.length > 0 &&
+        posts?.map(
+          ({
+            _id,
+            userId,
+            firstName,
+            lastName,
+            description,
+            location,
+            picturePath,
+            userPicturePath,
+            likes,
+            comments,
+          }) => (
+            <PostWidget
+              key={_id}
+              postId={_id}
+              postUserId={userId}
+              name={`${firstName} ${lastName}`}
+              description={description}
+              location={location}
+              picturePath={picturePath}
+              userPicturePath={userPicturePath}
+              likes={likes}
+              comments={comments}
+            />
+          )
+        )}
     </>
   );
 };
